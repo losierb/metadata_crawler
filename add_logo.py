@@ -15,6 +15,9 @@ folder_storage  = os.path.join(os.path.dirname(__file__), "storage")
 logo = Image.open(os.path.join(os.path.dirname(__file__), "55.PNG"))
 r,g,b,a = logo.split()
 
+if not os.path.isdir(folder_storage):
+    os.mkdir(folder_storage)
+
 def resize_image(img, size):
     img = img.resize(size, Image.ANTIALIAS)
     return img

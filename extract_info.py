@@ -41,14 +41,14 @@ def getmovieinfo(values):
         add_logo.auto_fetch_and_resize(r['title'], r['rating']['average'])
         print("片名: " + r['title'])
         print("别名: " + ', '.join(x for x in r['aka']))
-        print("评分: " + str(r['rating']['average']))
-        print("年份: " + r['year'])
+        print("国家: " + ', '.join(x for x in r['countries']))
         print("语言：" + normalize_language(lang))
         print("风格: " + ', '.join(x for x in r['genres']))
-        print("国家: " + ', '.join(x for x in r['countries']))
         print("导演: " + ', '.join(x['name'] for x in r['directors']))
         print("演员: " + ', '.join(x['name'] for x in r['casts']))
-        summary = r['summary'].replace(".©豆瓣","")
+        print("年份: " + r['year'])
+        print("评分: " + str(r['rating']['average']))
+        summary = r['summary'].replace("©豆瓣","")
         if(len(summary) > 255):
             summary = summary[:252]+"……"
         print("简介: " + summary)
