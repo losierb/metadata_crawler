@@ -1,10 +1,7 @@
 from extract_info import getmovieinfo
-
+from server_interact import fetch_next_program
 if __name__ == "__main__":
+    page = 0
     while True:
-        filename = input("输入电影文件名：")
-
-        if filename == 'quit':
-            exit(0)
-        else:
-            getmovieinfo(filename)
+        fetch_next_program(getmovieinfo, page)
+        page = page + 1
