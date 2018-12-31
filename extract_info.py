@@ -64,7 +64,7 @@ def getmovieinfo(fileId, name):
             "action": "video",
             "fileId": fileId,
             "title": r['title'],
-            "subtitle": ', '.join(x for x in r['aka']),
+            "subtitle": '' if len(r['aka']) == 0 else r['aka'][0],
             "type":"video",
             "style":[util.find_style_id(x) for x in r['genres']],
             "area": util.find_area_id(r['countries'][0]),
