@@ -53,7 +53,7 @@ def query_tv_series_id(tv_series_name):
     for record in ret['rows']:
         if record['title'] == tv_series_name:
             return record['id']
-    raise Exception("tv series id not found!")
+    raise Exception("电视剧ID不存在")
 
 def post_to_server(keypair, post_url):
     myheaders = {
@@ -136,7 +136,7 @@ def post_picture(path):
         response=urllib.request.urlopen(request)
         return response.read().decode('utf8')
     except urllib.error.HTTPError:
-        raise Exception("Upload failed")
+        raise Exception("上传失败")
 
 def upload_movie_info(form):
     post_url = base_url + "/api/v2/video"
@@ -147,10 +147,12 @@ def upload_tv_series_info(form, pid):
     post_to_server(form, post_url)
 
 def fetch_next_program(f, page):
-    get_url = base_url + "/api/v2/source?ps=10&pn={0}&status=1".format(page)
+    get_url = base_url + "/api/v2/source?ps=1&pn={0}&status=1".format(page)
     ret = get_from_server(get_url)
     for item in ret['rows']:
         try:
             f(item['fileId'], item['name'])
+            return True
         except Exception as e:
-            print("failed adding {0}: {1}".format(item['name'], e))
+            print("无法添加{0}：{1}".format(item['name'], e))
+            return False

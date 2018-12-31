@@ -33,7 +33,7 @@ def get_video_info(fileId, name):
     pat = regex.match(name)
 
     if pat == None:
-        raise Exception("File name not recognized")
+        raise Exception("文件名不符合格式")
 
     video_name = pat.group(1)
     lang = pat.group(2)
@@ -72,18 +72,18 @@ def add_tv_series(fileId, tv_series_name, tv_series_number, lang):
             searchurl = douban_search_url + urllib.parse.quote(tv_series_name)
             result = getjson(searchurl)
             if result['count'] == 0 or len(result['subjects']) == 0:
-                raise Exception("no such tv series found")
+                raise Exception("搜不到该电视剧")
         else:
             id = -1
             for i in result['subjects']:
                 if i['subtype'] == "tv":
                     id = i['id']
             if id == -1:
-                raise Exception("No such tv series found")
+                raise Exception("搜不到该电视剧")
             url = douban_info_url + id
             r = getjson(url)
             if r['subtype'] != 'tv':
-                raise Exception("Not a tv!")
+                raise Exception("不是电视剧")
             add_logo.auto_fetch_image(r['title'], False)
 
             summary = r['summary'].replace("©豆瓣","")
@@ -123,18 +123,18 @@ def add_movie(fileId, movie_name, lang):
         searchurl = douban_search_url + urllib.parse.quote(movie_name)
         result = getjson(searchurl)
         if result['count'] == 0 or len(result['subjects']) == 0:
-            raise Exception("No such movie found")
+            raise Exception("搜不到该电影")
     else:
         id = -1
         for i in result['subjects']:
             if i['subtype'] == "movie":
                 id = i['id']
         if id == -1:
-            raise Exception("No such movie found")
+            raise Exception("搜不到该电影")
         url = douban_info_url + id
         r = getjson(url)
         if r['subtype'] != 'movie':
-            raise Exception("Not a movie!")
+            raise Exception("不是电影")
         add_logo.auto_fetch_image(r['title'], True)
 
         summary = r['summary'].replace("©豆瓣","")

@@ -3159,7 +3159,7 @@ def find_style_id(style, pid):
     for i in code:
         if i['pid'] == pid and i['type'] == 'style' and i['name'] == style:
             return i['id']
-    raise "no such style!"
+    raise "没这个风格"
 
 def find_area_id(area, pid):
     if area == "中国大陆":
