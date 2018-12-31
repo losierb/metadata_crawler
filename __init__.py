@@ -1,7 +1,7 @@
-from extract_info import getmovieinfo
+from extract_info import get_video_info
 from server_interact import fetch_next_program
 if __name__ == "__main__":
-    page = 0
+    page = 1
     while True:
-        fetch_next_program(getmovieinfo, page)
+        fetch_next_program(get_video_info, page)
         page = page + 1

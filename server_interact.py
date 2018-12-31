@@ -47,6 +47,14 @@ def query_people_id(actor_name):
     post_actor(actor_name)
     return query_people_id(actor_name)
 
+def query_tv_series_id(tv_series_name):
+    get_url = base_url + "/api/v2/video?title=" + urllib.parse.quote(tv_series_name)
+    ret = get_from_server(get_url)
+    for record in ret['rows']:
+        if record['title'] == tv_series_name:
+            return record['id']
+    raise Exception("tv series id not found!")
+
 def post_to_server(keypair, post_url):
     myheaders = {
             #'Host': 'a.mm6.com',
@@ -65,9 +73,9 @@ def post_to_server(keypair, post_url):
     myheaders['Content-Length'] = len(mydata)
     request = urllib.request.Request(post_url, data=mydata, headers=myheaders, method=mymethod)
     try:
-        response=urllib.request.urlopen(request)
+        urllib.request.urlopen(request)
         return True
-    except urllib.error.HTTPError as e:
+    except urllib.error.HTTPError:
         return False
 
 def post_actor(name):
@@ -128,10 +136,14 @@ def post_picture(path):
         response=urllib.request.urlopen(request)
         return response.read().decode('utf8')
     except urllib.error.HTTPError:
-        raise "upload failed"
+        raise Exception("Upload failed")
 
-def upload_info(form):
+def upload_movie_info(form):
     post_url = base_url + "/api/v2/video"
+    post_to_server(form, post_url)
+
+def upload_tv_series_info(form, pid):
+    post_url = base_url + "/api/v2/video/" + pid
     post_to_server(form, post_url)
 
 def fetch_next_program(f, page):
@@ -140,5 +152,5 @@ def fetch_next_program(f, page):
     for item in ret['rows']:
         try:
             f(item['fileId'], item['name'])
-        except:
-            pass
+        except Exception as e:
+            print("failed adding {0}: {1}".format(item['name'], e))

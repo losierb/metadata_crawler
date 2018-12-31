@@ -2184,71 +2184,6 @@ code = [
         }
     },
     {
-        "id": 540,
-        "pid": -1,
-        "type": "channel",
-        "name": "动漫",
-        "code": "comic",
-        "createTime": "2018-08-29 20:00:03",
-        "updateTime": "2018-08-29 20:00:03",
-        "status": {
-            "value": 1,
-            "name": "启用"
-        }
-    },
-    {
-        "id": 539,
-        "pid": -1,
-        "type": "channel",
-        "name": "音乐",
-        "code": "music",
-        "createTime": "2018-08-29 19:59:52",
-        "updateTime": "2018-08-29 19:59:52",
-        "status": {
-            "value": 1,
-            "name": "启用"
-        }
-    },
-    {
-        "id": 538,
-        "pid": -1,
-        "type": "channel",
-        "name": "综艺",
-        "code": "variety",
-        "createTime": "2018-08-29 19:59:30",
-        "updateTime": "2018-08-29 19:59:30",
-        "status": {
-            "value": 1,
-            "name": "启用"
-        }
-    },
-    {
-        "id": 537,
-        "pid": -1,
-        "type": "channel",
-        "name": "电视剧",
-        "code": "teleplay",
-        "createTime": "2018-08-29 19:58:37",
-        "updateTime": "2018-08-29 19:58:37",
-        "status": {
-            "value": 1,
-            "name": "启用"
-        }
-    },
-    {
-        "id": 14,
-        "pid": -1,
-        "type": "channel",
-        "name": "电影",
-        "code": "movie",
-        "createTime": None,
-        "updateTime": None,
-        "status": {
-            "value": 1,
-            "name": "启用"
-        }
-    },
-    {
         "id": 17,
         "pid": 14,
         "type": "area",
@@ -3205,25 +3140,34 @@ for i in code:
     del i['updateTime']
     del i['status']
 
-def find_language_id(language):
+anime_id = 540 # "动漫",
+music_id = 539 # "音乐",
+show_id = 538 # "综艺",
+tv_series_id = 537 # "电视剧",
+movie_id = 14  # "电影",
+
+def find_language_id(language, pid):
     if language == "国语":
         language = "普通话"
 
     for i in code:
-        if i['pid'] == 14 and i['type'] == 'language' and i['name'] == language:
+        if i['pid'] == pid and i['type'] == 'language' and i['name'] == language:
             return i['id']
-    return find_language_id("其它")
+    return find_language_id("其它", pid)
 
-def find_style_id(style):
+def find_style_id(style, pid):
     for i in code:
-        if i['pid'] == 14 and i['type'] == 'style' and i['name'] == style:
+        if i['pid'] == pid and i['type'] == 'style' and i['name'] == style:
             return i['id']
     raise "no such style!"
 
-def find_area_id(area):
+def find_area_id(area, pid):
     if area == "中国大陆":
-        area = "华语"
+        if pid == movie_id:
+            area = "华语"
+        elif pid == tv_series_id:
+            area = "内地"
     for i in code:
-        if i['pid'] == 14 and i['type'] == 'area' and i['name'] == area:
+        if i['pid'] == pid and i['type'] == 'area' and i['name'] == area:
             return i['id']
-    return find_area_id("其它")
+    return find_area_id("其它", pid)

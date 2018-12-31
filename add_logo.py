@@ -37,7 +37,7 @@ def generate_image(name, size):
     new_img.save(path)
     return path
 
-def crawl_image(name, portrait):
+def crawl_image(name, portrait, moviep):
     filename = name + ("-竖屏" if portrait else "-横屏")
     class MyImageDownloader(ImageDownloader):
         def get_filename(self, task, default_ext):
@@ -62,8 +62,8 @@ def crawl_image(name, portrait):
                                    log_level=logging.ERROR)
     portrait_mode = "海报" if portrait else "剧照"
 
-    google_crawler.crawl(keyword=name+"+电影+"+portrait_mode, max_num=1)
+    google_crawler.crawl(keyword=name+"+{0}+".format("电影" if moviep else "电视剧") +portrait_mode, max_num=1)
 
-def auto_fetch_image(name):
-    crawl_image(name, True)
-    crawl_image(name, False)
+def auto_fetch_image(name, moviep):
+    crawl_image(name, True, moviep)
+    crawl_image(name, False, moviep)
