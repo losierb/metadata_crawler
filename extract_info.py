@@ -33,14 +33,23 @@ def get_video_info(fileId, name):
     pat = regex.match(name)
 
     if pat == None:
-        raise Exception("文件名不符合格式")
+        print("文件名不符合格式({0})！！".format(name))
+        while True:
+            yn = input("输入电影(Y)或电视剧(N)(默认Y):")
+            if yn == 'Y' or yn == 'y' or yn == '':
+                is_tv_series = False
+                break
+            elif yn == 'N' or yn == 'n':
+                is_tv_series = True
+                break
+        video_name = input("输入电影/电视剧名(电视剧名后面要带第几集):")
+        lang = input("输入语言:")
+    else:
+        video_name = pat.group(1)
+        lang = pat.group(2)
+        if re.match(r'(.*)第([0-9]+)集', video_name) != None:
+            is_tv_series = True
 
-    video_name = pat.group(1)
-    lang = pat.group(2)
-
-    if re.match(r'(.*)第([0-9]+)集', video_name) != None:
-        is_tv_series = True
-        #raise "这是电视剧"
     if is_tv_series:
         pat = re.match(r'(.*)第([0-9]+)集', video_name)
         tv_series_name = pat.group(1)
@@ -114,6 +123,7 @@ def add_tv_series(fileId, tv_series_name, tv_series_number, lang):
             add_tv_series(fileId, tv_series_name, tv_series_number, lang)
 
 def add_movie(fileId, movie_name, lang):
+    print("in add_movie()")
     searchurl = douban_search_url + urllib.parse.quote(movie_name)
     #content = urllib.request.unquote(response.read())  #得到
     result = getjson(searchurl)
@@ -161,5 +171,5 @@ def add_movie(fileId, movie_name, lang):
         }
         if(r['rating']['average'] >= 7.8):
             fill_info['viewTopic'] = generate_and_upload(r['title'], size_480_320)
-        #print(fill_info)
+        print(fill_info)
         server_interact.upload_movie_info(fill_info)
