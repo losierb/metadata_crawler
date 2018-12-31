@@ -33,7 +33,7 @@ def getmovieinfo(fileId, name):
     pat = regex.match(name)
     if pat == None:
         raise "文件名不匹配"
-    if re.match(name, "第[0-9]+集") != None:
+    if re.match(".*第([0-9]+)集", name) != None:
         raise "这是电视剧"
     movie_name = pat.group(1)
     lang = pat.group(2)
