@@ -87,6 +87,7 @@ def add_tv_series(fileId, tv_series_name, tv_series_number, lang):
             for i in result['subjects']:
                 if i['subtype'] == "tv":
                     id = i['id']
+                    break
             if id == -1:
                 raise Exception("搜不到该电视剧")
             url = douban_info_url + id
@@ -139,6 +140,7 @@ def add_movie(fileId, movie_name, lang):
         for i in result['subjects']:
             if i['subtype'] == "movie":
                 id = i['id']
+                break
         if id == -1:
             raise Exception("搜不到该电影")
         url = douban_info_url + id
