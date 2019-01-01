@@ -77,95 +77,42 @@ def add_tv_series(fileId, tv_series_name, tv_series_number, lang):
         print("tv series {0} not registed, doing it now!".format(tv_series_name))
         searchurl = douban_search_url + urllib.parse.quote(tv_series_name)
         result = getjson(searchurl)
-        if result['count'] == 0 or len(result['subjects']) == 0:
+        if result['total'] == 0 or len(result['subjects']) == 0:
             searchurl = douban_search_url + urllib.parse.quote(tv_series_name)
             result = getjson(searchurl)
-            if result['count'] == 0 or len(result['subjects']) == 0:
+            if result['total'] == 0 or len(result['subjects']) == 0:
                 raise Exception("搜不到该电视剧")
-        else:
-            id = -1
-            for i in result['subjects']:
-                if i['subtype'] == "tv":
-                    id = i['id']
-                    break
-            if id == -1:
-                raise Exception("搜不到该电视剧")
-            url = douban_info_url + id
-            r = getjson(url)
-            if r['subtype'] != 'tv':
-                raise Exception("不是电视剧")
-            add_logo.auto_fetch_image(r['title'], False)
 
-            summary = r['summary'].replace("©豆瓣","")
-            if(len(summary) > 255):
-                summary = trim_last(summary[:255], '。') + '。'
-
-            fill_info = {
-                "action":"box",
-                "title": tv_series_name,
-                "type":"box",
-                "area": util.find_area_id(r['countries'][0], util.tv_series_id),
-                "director": [server_interact.query_people_id(x['name']) for x in r['directors']],
-                "actor":[server_interact.query_people_id(x['name']) for x in r['casts']],
-                "channel": util.tv_series_id,
-                "language": util.find_language_id(lang, util.tv_series_id),
-                "premiere":str(r['year']),
-                "dbRating": r['rating']['average'],
-                "subtitle": '' if len(r['aka']) == 0 else r['aka'][0],
-                "totalEpisode": r['episodes_count'],
-                "description": summary,
-                "viewTall": generate_and_upload(r['title'], size_260_360),
-                "viewFat": generate_and_upload(r['title'], size_220_124),
-                "watermark":2
-            }
-            if(r['rating']['average'] >= 7.8):
-                fill_info['viewTopic'] = generate_and_upload(r['title'], size_480_320)
-            server_interact.upload_movie_info(fill_info)
-            add_tv_series(fileId, tv_series_name, tv_series_number, lang)
-
-def add_movie(fileId, movie_name, lang):
-    print("in add_movie()")
-    searchurl = douban_search_url + urllib.parse.quote(movie_name)
-    #content = urllib.request.unquote(response.read())  #得到
-    result = getjson(searchurl)
-
-    if result['count'] == 0 or len(result['subjects']) == 0:
-        movie_name = trim_last(movie_name, '（')
-        searchurl = douban_search_url + urllib.parse.quote(movie_name)
-        result = getjson(searchurl)
-        if result['count'] == 0 or len(result['subjects']) == 0:
-            raise Exception("搜不到该电影")
-    else:
         id = -1
         for i in result['subjects']:
-            if i['subtype'] == "movie":
+            if i['subtype'] == "tv":
                 id = i['id']
                 break
         if id == -1:
-            raise Exception("搜不到该电影")
+            raise Exception("搜不到该电视剧")
         url = douban_info_url + id
         r = getjson(url)
-        if r['subtype'] != 'movie':
-            raise Exception("不是电影")
-        add_logo.auto_fetch_image(r['title'], True)
+        if r['subtype'] != 'tv':
+            raise Exception("不是电视剧")
+        add_logo.auto_fetch_image(r['title'], False)
 
         summary = r['summary'].replace("©豆瓣","")
         if(len(summary) > 255):
             summary = trim_last(summary[:255], '。') + '。'
+
         fill_info = {
-            "action": "video",
-            "fileId": fileId,
-            "title": r['title'],
-            "subtitle": '' if len(r['aka']) == 0 else r['aka'][0],
-            "type":"video",
-            "style":[util.find_style_id(x, util.movie_id) for x in r['genres']],
-            "area": util.find_area_id(r['countries'][0], util.movie_id),
-            "director":[server_interact.query_people_id(x['name']) for x in r['directors']],
+            "action":"box",
+            "title": tv_series_name,
+            "type":"box",
+            "area": util.find_area_id(r['countries'][0], util.tv_series_id),
+            "director": [server_interact.query_people_id(x['name']) for x in r['directors']],
             "actor":[server_interact.query_people_id(x['name']) for x in r['casts']],
-            "channel":14,
-            "language": util.find_language_id(lang, util.movie_id),
+            "channel": util.tv_series_id,
+            "language": util.find_language_id(lang, util.tv_series_id),
             "premiere":str(r['year']),
-            "dbRating":r['rating']['average'],
+            "dbRating": r['rating']['average'],
+            "subtitle": '' if len(r['aka']) == 0 else r['aka'][0],
+            "totalEpisode": r['episodes_count'],
             "description": summary,
             "viewTall": generate_and_upload(r['title'], size_260_360),
             "viewFat": generate_and_upload(r['title'], size_220_124),
@@ -173,5 +120,58 @@ def add_movie(fileId, movie_name, lang):
         }
         if(r['rating']['average'] >= 7.8):
             fill_info['viewTopic'] = generate_and_upload(r['title'], size_480_320)
-        print(fill_info)
         server_interact.upload_movie_info(fill_info)
+        add_tv_series(fileId, tv_series_name, tv_series_number, lang)
+
+def add_movie(fileId, movie_name, lang):
+    print("in add_movie()")
+    searchurl = douban_search_url + urllib.parse.quote(movie_name)
+    #content = urllib.request.unquote(response.read())  #得到
+    result = getjson(searchurl)
+
+    if result['total'] == 0 or len(result['subjects']) == 0:
+        movie_name = trim_last(movie_name, '（')
+        searchurl = douban_search_url + urllib.parse.quote(movie_name)
+        result = getjson(searchurl)
+        if result['total'] == 0 or len(result['subjects']) == 0:
+            raise Exception("搜不到该电影")
+
+    id = -1
+    for i in result['subjects']:
+        if i['subtype'] == "movie":
+            id = i['id']
+            break
+    if id == -1:
+        raise Exception("搜不到该电影")
+    url = douban_info_url + id
+    r = getjson(url)
+    if r['subtype'] != 'movie':
+        raise Exception("不是电影")
+    add_logo.auto_fetch_image(r['title'], True)
+
+    summary = r['summary'].replace("©豆瓣","")
+    if(len(summary) > 255):
+        summary = trim_last(summary[:255], '。') + '。'
+    fill_info = {
+        "action": "video",
+        "fileId": fileId,
+        "title": r['title'],
+        "subtitle": '' if len(r['aka']) == 0 else r['aka'][0],
+        "type":"video",
+        "style":[util.find_style_id(x, util.movie_id) for x in r['genres']],
+        "area": util.find_area_id(r['countries'][0], util.movie_id),
+        "director":[server_interact.query_people_id(x['name']) for x in r['directors']],
+        "actor":[server_interact.query_people_id(x['name']) for x in r['casts']],
+        "channel":14,
+        "language": util.find_language_id(lang, util.movie_id),
+        "premiere":str(r['year']),
+        "dbRating":r['rating']['average'],
+        "description": summary,
+        "viewTall": generate_and_upload(r['title'], size_260_360),
+        "viewFat": generate_and_upload(r['title'], size_220_124),
+        "watermark":2
+    }
+    if(r['rating']['average'] >= 7.8):
+        fill_info['viewTopic'] = generate_and_upload(r['title'], size_480_320)
+    print(fill_info)
+    server_interact.upload_movie_info(fill_info)
